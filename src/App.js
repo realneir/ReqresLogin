@@ -1,25 +1,66 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import axios from "axios";
 
-export default App;
+import { ValidateUser } from './Utils';
+
+const Login = () => {
+	const [user, setUser] = useState({
+		email: '',
+		password: ''
+	});
+
+	const [result, setResult] = useState('');
+
+	const onChange = (evt) => {
+		const value = evt.target.value;
+		const name = evt.target.name;
+		setUser({
+			...user,
+			[name]: value
+		});
+	};
+
+	const sendLogin = async () => {
+		try {
+			const res = await ValidateUser(user);
+			setResult(res && res.code ? 'Invalid user' : 'Valid user'); //res = token
+		}catch(err) {
+			console.log('err in login.js ', err);
+		}		
+	};
+
+	const handleLogout = () => {
+		setResult('');
+	};
+
+	return  ( 
+		<>
+			<input 
+				placeholder="Enter Email"
+				type="text"
+				onChange={onChange}
+				data-testid="email"
+				name="email"
+			/><br />
+			<input 
+				placeholder="Enter password"
+				type="password"
+				onChange={onChange}
+				data-testid="password"
+				name="password"
+			/>
+			<br/>
+			<button
+				onClick={sendLogin} 
+				data-testid="send-user-login"
+			>
+				Login
+			</button>
+			<br/>
+			<h2 data-testid="token">{result}</h2>
+		</>
+	)
+};
+
+export default Login;
